@@ -1,0 +1,217 @@
+@startuml
+
+' Package for model classes
+package dev.scu.taskmanager.model {
+    class User {
+        - Long id
+        - String email
+        - String password
+        + getUserByEmail()
+        + createUser()
+    }
+
+    class Role {
+        - Integer id
+        - String role
+        + findByRole()
+    }
+
+    class Task {
+        - Long id
+        - String description
+        - User owner
+        + createTask()
+    }
+
+    class Comment {
+        - Long id
+        - String content
+        - User author
+        - Task task
+        + createComment()
+    }
+
+    class Notification {
+        - Long id
+        - String message
+        - User recipient
+        + createNotification()
+    }
+}
+
+' Package for repository interfaces
+package dev.scu.taskmanager.repository {
+    interface UserRepository {
+        + List<User> findByEmail(String email)
+    }
+
+    interface RoleRepository {
+        + List<Role> findByRole(String role)
+    }
+
+    interface TaskRepository {
+        + List<Task> findByOwner(User owner)
+    }
+
+    interface CommentRepository {
+        + List<Comment> findByTask(Task task)
+    }
+
+    interface NotificationRepository {
+        + List<Notification> findByRecipient(User recipient)
+    }
+}
+
+' Package for service interfaces
+package dev.scu.taskmanager.service {
+    interface UserService {
+        + User getUserByEmail(String email)
+        + User createUser(User user)
+        + User changeRoleToAdmin(User user)
+        + List<User> findAll()
+        + boolean isUserEmailPresent(String email)
+        + User getUserById(Long id)
+        + void deleteUser(Long id)
+    }
+
+    interface RoleService {
+        + Role getRoleByName(String roleName)
+        + List<Role> getAllRoles()
+    }
+
+    interface TaskService {
+        + Task createTask(Task task)
+        + List<Task> getTasksByOwner(User owner)
+    }
+
+    interface CommentService {
+        + Comment createComment(Comment comment)
+        + List<Comment> getCommentsByTask(Task task)
+    }
+
+    interface NotificationService {
+        + Notification createNotification(Notification notification)
+        + List<Notification> getNotificationsByRecipient(User recipient)
+    }
+}
+
+' Package for service implementations
+package dev.scu.taskmanager.service.impl {
+    class UserServiceImpl {
+        + User getUserByEmail(String email)
+        + User createUser(User user)
+        + User changeRoleToAdmin(User user)
+        + List<User> findAll()
+        + boolean isUserEmailPresent(String email)
+        + User getUserById(Long id)
+        + void deleteUser(Long id)
+    }
+
+    class RoleServiceImpl {
+        + Role getRoleByName(String roleName)
+        + List<Role> getAllRoles()
+    }
+
+    class TaskServiceImpl {
+        + Task createTask(Task task)
+        + List<Task> getTasksByOwner(User owner)
+    }
+
+    class CommentServiceImpl {
+        + Comment createComment(Comment comment)
+        + List<Comment> getCommentsByTask(Task task)
+    }
+
+    class NotificationServiceImpl {
+        + Notification createNotification(Notification notification)
+        + List<Notification> getNotificationsByRecipient(User recipient)
+    }
+}
+
+' Define relationships
+UserServiceImpl "1" *-- "1" UserRepository
+UserServiceImpl "1" *-- "1" RoleRepository
+UserServiceImpl "1" *-- "many" User
+RoleServiceImpl "1" *-- "1" RoleRepository
+TaskServiceImpl "1" *-- "1" TaskRepository
+Task "1" *-- "1" User
+CommentServiceImpl "1" *-- "1" CommentRepository
+NotificationServiceImpl "1" *-- "1" NotificationRepository
+Comment "1" *-- "1" User
+Comment "1" *-- "1" Task
+Notification "1" *-- "1" User
+
+' Layout directive to place service implementations below their interfaces
+UserService -down- UserServiceImpl
+RoleService -down- RoleServiceImpl
+TaskService -down- TaskServiceImpl
+CommentService -down- CommentServiceImpl
+NotificationService -down- NotificationServiceImpl
+
+' Package for controller classes
+package dev.scu.taskmanager.controller {
+    class UserController {
+        + getUserByEmail(String email)
+        + createUser(User user)
+        + changeRoleToAdmin(User user)
+    }
+
+    class TaskController {
+        + createTask(Task task)
+        + getTasksByOwner(User owner)
+    }
+
+    class CommentController {
+        + createComment(Comment comment)
+        + getCommentsByTask(Task task)
+    }
+
+    class NotificationController {
+        + createNotification(Notification notification)
+        + getNotificationsByRecipient(User recipient)
+    }
+
+    class LoginController {
+        + login()
+    }
+
+    class RegisterController {
+        + register()
+    }
+
+    class StaticPageController {
+        + about()
+        + home()
+    }
+}
+
+' Package for configuration classes
+package dev.scu.taskmanager.configuration {
+    class SecurityConfiguration {
+        + configure()
+    }
+
+    class DataSourceConfiguration {
+        + dataSource()
+    }
+}
+
+' Package for dataloader classes
+package dev.scu.taskmanager.dataloader {
+    class InitialDataLoader {
+        + onApplicationEvent()
+        + createUserData()
+        + createRoleData()
+        + createTaskData()
+    }
+}
+
+' Layout directive to place certain packages below others
+model -down- controller
+service -down- controller
+repository -down- controller
+
+controller -right- configuration
+controller -right- dataloader
+
+@enduml
